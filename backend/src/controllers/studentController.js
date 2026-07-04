@@ -1,4 +1,7 @@
-import { createStudentService ,getStudentsService} from "../services/studentService.js";
+import {
+  createStudentService,
+  getStudentsService,getStudentByIdService,
+} from "../services/studentService.js";
 
 export const createStudent = async (req, res) => {
   try {
@@ -35,3 +38,22 @@ export const getStudents = async (req, res) => {
     });
   }
 };
+
+export const getStudentById = async (req, res) => {
+  try {
+    const student = await getStudentByIdService(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      data: student,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+

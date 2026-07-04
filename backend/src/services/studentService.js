@@ -100,16 +100,16 @@ export const createStudentService = async (studentData) => {
 export const getStudentsService = async (queryParams) => {
   const page = Number(queryParams.page) || 1;
   const limit = Number(queryParams.limit) || 5;
- 
+
   const search = queryParams.search?.trim() || "";
   const grade = queryParams.grade || "";
 
   const offset = (page - 1) * limit;
-  
+
   let whereClause = "";
   const values = [];
   let parameterIndex = 1;
- 
+
   if (grade) {
     whereClause += ` WHERE grade = $${parameterIndex}`;
     values.push(Number(grade));
@@ -130,15 +130,18 @@ export const getStudentsService = async (queryParams) => {
     parameterIndex++;
   }
 
-  const totalResult = await pool.query(`
+  const totalResult = await pool.query(
+    `
     SELECT COUNT(*) AS total
     FROM students
     ${whereClause};
-    `,values);
+    `,
+    values,
+  );
   const totalRecords = Number(totalResult.rows[0].total);
 
- const studentsResult = await pool.query(
-   `
+  const studentsResult = await pool.query(
+    `
   SELECT id,first_name,last_name,email,
          age,grade,created_at
   FROM students
@@ -147,8 +150,8 @@ export const getStudentsService = async (queryParams) => {
   LIMIT $${parameterIndex}
   OFFSET $${parameterIndex + 1};
   `,
-   [...values, limit, offset],
- );
+    [...values, limit, offset],
+  );
 
   const students = studentsResult.rows.map((student) => ({
     id: student.id,
@@ -168,5 +171,74 @@ export const getStudentsService = async (queryParams) => {
       totalRecords,
       totalPages: Math.ceil(totalRecords / limit),
     },
+  };
+};
+
+export const getStudentByIdService = async (id) => {
+  // Fetch student
+  const studentResult = await pool.query(
+    `
+      SELECT
+        id,
+        first_name,
+        last_name,
+        email,
+        age,
+        grade,
+        created_at
+      FROM students
+      WHERE id = $1;
+    `,
+    [id],
+  );
+
+  if (studentResult.rows.length === 0) {
+    throw new Error("Student not found.");
+  }
+
+  const student = studentResult.rows[0];
+
+  // Fetch marks with subject names
+  const marksResult = await pool.query(
+    `
+      SELECT
+        m.subject_id,
+        s.name AS subject,
+        m.marks
+      FROM marks m
+      INNER JOIN subjects s
+        ON m.subject_id = s.id
+      WHERE m.student_id = $1
+      ORDER BY m.subject_id;
+    `,
+    [id],
+  );
+
+  const formattedMarks = marksResult.rows.map((mark) => ({
+    subjectId: mark.subject_id,
+    subject: mark.subject,
+    marks: mark.marks,
+  }));
+
+  // Calculate total marks
+  const totalMarks = formattedMarks.reduce(
+    (total, mark) => total + mark.marks,
+    0,
+  );
+
+  // Calculate pass/fail status
+  const status = totalMarks >= PASSING_MARKS ? "PASS" : "FAIL";
+
+  return {
+    id: student.id,
+    firstName: student.first_name,
+    lastName: student.last_name,
+    email: student.email,
+    age: student.age,
+    grade: student.grade,
+    createdAt: student.created_at,
+    marks: formattedMarks,
+    totalMarks,
+    status,
   };
 };
