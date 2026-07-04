@@ -96,3 +96,77 @@ export const createStudentService = async (studentData) => {
     client.release();
   }
 };
+
+export const getStudentsService = async (queryParams) => {
+  const page = Number(queryParams.page) || 1;
+  const limit = Number(queryParams.limit) || 5;
+ 
+  const search = queryParams.search?.trim() || "";
+  const grade = queryParams.grade || "";
+
+  const offset = (page - 1) * limit;
+  
+  let whereClause = "";
+  const values = [];
+  let parameterIndex = 1;
+ 
+  if (grade) {
+    whereClause += ` WHERE grade = $${parameterIndex}`;
+    values.push(Number(grade));
+    parameterIndex++;
+  }
+
+  if (search) {
+    whereClause += whereClause ? " AND " : " WHERE ";
+
+    whereClause += `
+  (
+    first_name ILIKE $${parameterIndex}
+    OR last_name ILIKE $${parameterIndex}
+  )
+  `;
+
+    values.push(`%${search}%`);
+    parameterIndex++;
+  }
+
+  const totalResult = await pool.query(`
+    SELECT COUNT(*) AS total
+    FROM students
+    ${whereClause};
+    `,values);
+  const totalRecords = Number(totalResult.rows[0].total);
+
+ const studentsResult = await pool.query(
+   `
+  SELECT id,first_name,last_name,email,
+         age,grade,created_at
+  FROM students
+  ${whereClause}
+  ORDER BY id
+  LIMIT $${parameterIndex}
+  OFFSET $${parameterIndex + 1};
+  `,
+   [...values, limit, offset],
+ );
+
+  const students = studentsResult.rows.map((student) => ({
+    id: student.id,
+    firstName: student.first_name,
+    lastName: student.last_name,
+    email: student.email,
+    age: student.age,
+    grade: student.grade,
+    createdAt: student.created_at,
+  }));
+
+  return {
+    students,
+    pagination: {
+      currentPage: page,
+      limit,
+      totalRecords,
+      totalPages: Math.ceil(totalRecords / limit),
+    },
+  };
+};
