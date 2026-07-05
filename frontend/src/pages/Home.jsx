@@ -3,6 +3,7 @@ import { getStudents } from "../api/studentApi";
 import StudentTable from "../components/StudentTable";
 import Pagination from "../components/Pagination";
 import SearchBar from "../components/SearchBar";
+import GradeFilter from "../components/GradeFilter";
 
 const Home = () => {
   // Student data
@@ -11,7 +12,7 @@ const Home = () => {
   // User controlled state
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
-  const [grade, setGrade] = useState("");
+
 
   // Server metadata
   const [pagination, setPagination] = useState({
@@ -40,6 +41,14 @@ const Home = () => {
 
     return () => clearTimeout(timer);
   }, [search]);
+
+  //grade filter state
+  const [grade, setGrade] = useState("");
+  
+  const handleGradeChange = (value) => {
+    setPage(1);
+    setGrade(value);
+  };
 
   const loadStudents = async () => {
     try {
@@ -85,6 +94,7 @@ const Home = () => {
       ) : (
         <>
           <SearchBar search={search} onSearchChange={handleSearchChange} />
+          <GradeFilter grade={grade} onGradeChange={handleGradeChange} />
           <StudentTable students={students} />
 
           <Pagination
