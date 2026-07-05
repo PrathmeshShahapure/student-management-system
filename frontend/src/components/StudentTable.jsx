@@ -1,6 +1,6 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Eye } from "lucide-react";
 
-const StudentTable = ({ students, onEdit, onDelete }) => {
+const StudentTable = ({ students, onEdit, onDelete, onView }) => {
   return (
     <div className="overflow-x-auto rounded-lg border border-gray-200">
       <table className="min-w-full">
@@ -49,6 +49,13 @@ const StudentTable = ({ students, onEdit, onDelete }) => {
 
                 <td className="px-4 py-3">
                   <div className="flex justify-center gap-3">
+                    <button
+                      onClick={() => onView(student.id)}
+                      className="text-gray-600 hover:text-black"
+                    >
+                      <Eye size={18} />
+                    </button>
+
                     <button
                       onClick={() => onEdit(student.id)}
                       className="text-blue-600 hover:text-blue-800"

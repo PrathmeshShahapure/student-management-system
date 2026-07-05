@@ -112,6 +112,10 @@ const Home = () => {
      setError(err.response?.data?.message || "Something went wrong.");
    }
  };
+  
+  const handleView = (id) => {
+    navigate(`/students/${id}`);
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
@@ -140,6 +144,7 @@ const Home = () => {
         <>
           <StudentTable
             students={students}
+            onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />
