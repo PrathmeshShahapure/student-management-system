@@ -9,6 +9,7 @@ import StudentTable from "../components/StudentTable";
 import Pagination from "../components/Pagination";
 import SearchBar from "../components/SearchBar";
 import GradeFilter from "../components/GradeFilter";
+import { deleteStudent } from "../api/studentApi";
 
 const Home = () => {
   // Student data
@@ -95,9 +96,22 @@ const Home = () => {
   };    
   
 
-  const handleDelete = (id) => {
-    console.log("Delete Student:", id);
-  };
+ const handleDelete = async (id) => {
+   const confirmed = window.confirm(
+     "Are you sure you want to delete this student?",
+   );
+
+   if (!confirmed) {
+     return;
+   }
+
+   try {
+     await deleteStudent(id);
+      await loadStudents();
+   } catch (err) {
+     setError(err.response?.data?.message || "Something went wrong.");
+   }
+ };
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
