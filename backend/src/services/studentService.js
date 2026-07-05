@@ -242,3 +242,134 @@ export const getStudentByIdService = async (id) => {
     status,
   };
 };
+
+export const updateStudentService = async (id, studentData) => {
+  const client = await pool.connect();
+
+  try {
+    const { firstName, lastName, email, age, grade, marks } = studentData;
+
+    // Basic validation
+    if (!Array.isArray(marks) || marks.length === 0) {
+      throw new Error("Marks are required.");
+    }
+
+    await client.query("BEGIN");
+
+    // Update student
+    const updateStudentQuery = `
+      UPDATE students
+      SET
+        first_name = $1,
+        last_name = $2,
+        email = $3,
+        age = $4,
+        grade = $5
+      WHERE id = $6
+      RETURNING *;
+    `;
+
+    const studentResult = await client.query(updateStudentQuery, [
+      firstName,
+      lastName,
+      email,
+      age,
+      grade,
+      id,
+    ]);
+
+    if (studentResult.rows.length === 0) {
+      throw new Error("Student not found.");
+    }
+
+    const updatedStudent = studentResult.rows[0];
+
+    // Delete existing marks
+    await client.query(
+      `
+      DELETE FROM marks
+      WHERE student_id = $1;
+      `,
+      [id],
+    );
+
+    // Insert updated marks
+    const insertMarkQuery = `
+      INSERT INTO marks
+      (student_id, subject_id, marks)
+      VALUES ($1, $2, $3);
+    `;
+
+    for (const mark of marks) {
+      await client.query(insertMarkQuery, [id, mark.subjectId, mark.marks]);
+    }
+
+    // Fetch updated marks with subject names
+    const marksResult = await client.query(
+      `
+      SELECT
+        m.subject_id,
+        s.name AS subject,
+        m.marks
+      FROM marks m
+      INNER JOIN subjects s
+        ON m.subject_id = s.id
+      WHERE m.student_id = $1
+      ORDER BY m.subject_id;
+      `,
+      [id],
+    );
+
+    const formattedMarks = marksResult.rows.map((mark) => ({
+      subjectId: mark.subject_id,
+      subject: mark.subject,
+      marks: mark.marks,
+    }));
+
+    // Calculate total marks
+    const totalMarks = formattedMarks.reduce(
+      (total, mark) => total + mark.marks,
+      0,
+    );
+
+    // Calculate status
+    const status = totalMarks >= PASSING_MARKS ? "PASS" : "FAIL";
+
+    await client.query("COMMIT");
+
+    return {
+      id: updatedStudent.id,
+      firstName: updatedStudent.first_name,
+      lastName: updatedStudent.last_name,
+      email: updatedStudent.email,
+      age: updatedStudent.age,
+      grade: updatedStudent.grade,
+      createdAt: updatedStudent.created_at,
+      marks: formattedMarks,
+      totalMarks,
+      status,
+    };
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+export const deleteStudentService = async (id) => {
+  const result = await pool.query(
+    `
+    DELETE FROM students
+    WHERE id = $1
+    RETURNING *;
+    `,
+    [id],
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error("Student not found.");
+  }
+
+  return;
+};
