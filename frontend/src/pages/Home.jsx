@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getStudents } from "../api/studentApi";
 import StudentTable from "../components/StudentTable";
 import Pagination from "../components/Pagination";
+import SearchBar from "../components/SearchBar";
 
 const Home = () => {
   // Student data
@@ -10,7 +11,6 @@ const Home = () => {
   // User controlled state
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
-  const [search, setSearch] = useState("");
   const [grade, setGrade] = useState("");
 
   // Server metadata
@@ -24,6 +24,23 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  //Searching states
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  const handleSearchChange = (value) => {
+    setPage(1);
+    setSearch(value);
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
   const loadStudents = async () => {
     try {
       setError("");
@@ -31,7 +48,7 @@ const Home = () => {
       const response = await getStudents({
         page,
         limit,
-        search,
+        search: debouncedSearch,
         grade,
       });
 
@@ -46,7 +63,7 @@ const Home = () => {
 
   useEffect(() => {
     loadStudents();
-  }, [page, limit, search, grade]);
+  }, [page, limit, debouncedSearch, grade]);
 
   const handlePageChange = (newPage) => {
     if (newPage < 1 || newPage > pagination.totalPages || newPage === page) {
@@ -67,6 +84,7 @@ const Home = () => {
         <h2 className="text-center text-red-500">{error}</h2>
       ) : (
         <>
+          <SearchBar search={search} onSearchChange={handleSearchChange} />
           <StudentTable students={students} />
 
           <Pagination
