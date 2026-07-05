@@ -10,3 +10,15 @@ export const createStudent = async (studentData) => {
 
   return response.data;
 };
+
+export const getStudentById = async (id) => {
+  const response = await api.get(`/students/${id}`);
+
+  return response.data;
+};
+
+export const updateStudent = async (id, studentData) => {
+  const response = await api.put(`/students/${id}`, studentData);
+
+  return response.data;
+};

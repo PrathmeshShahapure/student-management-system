@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { toStudentPayload } from "../utils/studentMapper";
 
 const StudentForm = ({ defaultValues, onSubmit, buttonText }) => {
   const {
@@ -16,29 +17,7 @@ const StudentForm = ({ defaultValues, onSubmit, buttonText }) => {
   }, [defaultValues, reset]);
     
   const submitForm = (data) => {
-    const payload = {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      age: Number(data.age),
-      grade: Number(data.grade),
-      marks: [
-        {
-          subjectId: 1,
-          marks: Number(data.mathMarks),
-        },
-        {
-          subjectId: 2,
-          marks: Number(data.scienceMarks),
-        },
-        {
-          subjectId: 3,
-          marks: Number(data.englishMarks),
-        },
-      ],
-    };
-
-    onSubmit(payload);
+    onSubmit(toStudentPayload(data));
   };
 
   return (

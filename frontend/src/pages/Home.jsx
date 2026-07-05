@@ -1,4 +1,9 @@
 import { useEffect, useState } from "react";
+
+import { Plus } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 import { getStudents } from "../api/studentApi";
 import StudentTable from "../components/StudentTable";
 import Pagination from "../components/Pagination";
@@ -83,9 +88,27 @@ const Home = () => {
     setPage(newPage);
   };
 
+  const navigate = useNavigate();
+ 
+  const handleEdit = (id) => {
+    navigate(`/students/${id}/edit`);
+  };    
+  
+
+  const handleDelete = (id) => {
+    console.log("Delete Student:", id);
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
       <h1 className="text-3xl font-bold mb-8">Student Management System</h1>
+      <Link
+        to="/create"
+        className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
+      >
+        <Plus size={18} />
+        Create Student
+      </Link>
       <div className="mb-6 flex flex-col gap-4 md:flex-row">
         <div className="flex-1">
           <SearchBar search={search} onSearchChange={handleSearchChange} />
@@ -101,7 +124,11 @@ const Home = () => {
         <h2 className="text-center text-red-500">{error}</h2>
       ) : (
         <>
-          <StudentTable students={students} />
+          <StudentTable
+            students={students}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
 
           <Pagination
             currentPage={page}

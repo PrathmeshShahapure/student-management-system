@@ -16,4 +16,3 @@ const GradeFilter = ({ grade, onGradeChange }) => {
 };
 
 export default GradeFilter;
-    

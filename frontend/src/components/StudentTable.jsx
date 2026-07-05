@@ -1,4 +1,6 @@
-const StudentTable = ({ students }) => {
+import { Pencil, Trash2 } from "lucide-react";
+
+const StudentTable = ({ students, onEdit, onDelete }) => {
   return (
     <div className="overflow-x-auto rounded-lg border border-gray-200">
       <table className="min-w-full">
@@ -15,6 +17,8 @@ const StudentTable = ({ students }) => {
             <th className="px-4 py-3 text-left">Age</th>
 
             <th className="px-4 py-3 text-left">Grade</th>
+
+            <th className="px-4 py-3 text-center">Actions</th>
           </tr>
         </thead>
 
@@ -27,7 +31,10 @@ const StudentTable = ({ students }) => {
             </tr>
           ) : (
             students.map((student) => (
-              <tr key={student.id} className="border-t border-gray-200 hover:bg-gray-50">
+              <tr
+                key={student.id}
+                className="border-t border-gray-200 hover:bg-gray-50"
+              >
                 <td className="px-4 py-3">{student.id}</td>
 
                 <td className="px-4 py-3">{student.firstName}</td>
@@ -39,6 +46,24 @@ const StudentTable = ({ students }) => {
                 <td className="px-4 py-3">{student.age}</td>
 
                 <td className="px-4 py-3">{student.grade}</td>
+
+                <td className="px-4 py-3">
+                  <div className="flex justify-center gap-3">
+                    <button
+                      onClick={() => onEdit(student.id)}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <Pencil size={18} />
+                    </button>
+
+                    <button
+                      onClick={() => onDelete(student.id)}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))
           )}
