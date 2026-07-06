@@ -1,0 +1,168 @@
+{
+  "info": {
+    "_postman_id": "98fe497f-ecf2-47c9-89b7-26d2e6657fc2",
+    "name": "Student Management API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "44510601"
+  },
+  "item": [
+    {
+      "name": "Create Students",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"Raju\",\n  \"lastName\": \"Dholakpur\",\n  \"email\": \"raju@gmail.com\",\n  \"age\": 7,\n  \"grade\": 3,\n  \"marks\": [\n    {\n      \"subjectId\": 1,\n      \"marks\": 40\n    },\n    {\n      \"subjectId\": 2,\n      \"marks\": 70\n    },\n    {\n      \"subjectId\": 3,\n      \"marks\": 60\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/students",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "students"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Students",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000 /api/students?grade=3&search=Bheem&page=1&limit=5",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000 ",
+          "path": [
+            "api",
+            "students"
+          ],
+          "query": [
+            {
+              "key": "grade",
+              "value": "3",
+              "id": 0
+            },
+            {
+              "key": "search",
+              "value": "Bheem",
+              "id": 1
+            },
+            {
+              "key": "page",
+              "value": "1",
+              "id": 2
+            },
+            {
+              "key": "limit",
+              "value": "5",
+              "id": 3
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Student Details",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"John Banega \",\n  \"lastName\": \"Don\",\n  \"email\": \"john.updated@gmail.com\",\n  \"age\": 2,\n  \"grade\": 4,\n  \"marks\": [\n    {\n      \"subjectId\": 1,\n      \"marks\": 50\n    },\n    {\n      \"subjectId\": 2,\n      \"marks\": 92\n    },\n    {\n      \"subjectId\": 3,\n      \"marks\": 88\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/students/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "students",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Student By Id",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/api/students/2",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "students",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Student By Id",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/api/students/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "students",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
