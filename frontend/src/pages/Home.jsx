@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 import { getStudents } from "../api/studentApi";
 import StudentTable from "../components/StudentTable";
@@ -107,9 +108,11 @@ const Home = () => {
 
    try {
      await deleteStudent(id);
-      await loadStudents();
+     await loadStudents();
+     toast.success("Student deleted successfully!");
    } catch (err) {
      setError(err.response?.data?.message || "Something went wrong.");
+      toast.error(err.response?.data?.message || "Something went wrong.");
    }
  };
   
@@ -119,15 +122,22 @@ const Home = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
-      <h1 className="text-3xl font-bold mb-8">Student Management System</h1>
+      <h1 className="text-3xl font-bold mb-4 text-center">
+        Student Management System
+      </h1>
+      <p className="mb-6 text-xl text-gray-600 text-center">
+        A complete Student Management System with full CRUD functionality,
+        search, and pagination. <br/> Built to efficiently manage student records with
+        a clean and intuitive interface.
+      </p>
       <Link
         to="/create"
-        className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
+        className="flex justify-center w-50 mx-auto mb-8 items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
       >
         <Plus size={18} />
         Create Student
       </Link>
-      <div className="mb-6 flex flex-col gap-4 md:flex-row">
+      <div className=" flex flex-col gap-4 md:flex-row">
         <div className="flex-1">
           <SearchBar search={search} onSearchChange={handleSearchChange} />
         </div>
@@ -137,7 +147,7 @@ const Home = () => {
         </div>
       </div>
       {loading ? (
-        <h2 className="text-center text-lg">Loading...</h2>
+        <h2 className="text-center mx-auto h-8 w-8 border-2 border-blue-400 border-t-0 animate-spin rounded-full "></h2>
       ) : error ? (
         <h2 className="text-center text-red-500">{error}</h2>
       ) : (

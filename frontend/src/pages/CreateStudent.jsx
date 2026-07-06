@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import StudentForm from "../components/StudentForm";
 import { createStudent } from "../api/studentApi";
+import toast from "react-hot-toast";
 
 const defaultValues = {
   firstName: "",
@@ -19,10 +20,11 @@ const CreateStudent = () => {
   const handleCreate = async (studentData) => {
     try {
       await createStudent(studentData);
-
+      toast.success("Student created successfully!");
       navigate("/");
     } catch (err) {
       console.error(err);
+      toast.error(err.response?.data?.message || "Something went wrong.");
     }
   };
 

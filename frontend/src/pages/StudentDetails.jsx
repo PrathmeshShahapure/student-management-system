@@ -28,7 +28,9 @@ const StudentDetails = () => {
   }, []);
 
   if (loading) {
-    return <h2 className="p-6">Loading...</h2>;
+    return (
+      <h2 className="text-center mx-auto h-8 w-8 border-2 mt-10 border-blue-400 border-t-0 animate-spin rounded-full "></h2>
+    );
   }
 
   if (error) {
